@@ -1,0 +1,38 @@
+name: Personal Rules
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Install
+        run: bun install --frozen-lockfile
+      - name: Check
+        working-directory: skip-chinese-ads
+        run: bun run check
+      - name: Build plugin only
+        working-directory: skip-chinese-ads
+        run: bun run build
+      - name: Prepare source index
+        run: python3 scripts/personal-source.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: personal-skip-ads
+          path: release/
+          if-no-files-found: error
+      - name: Publish versioned release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "personal-${{ github.run_number }}" release/* --target "$GITHUB_SHA" --title "自用跳广告规则 ${{ github.run_number }}" --notes "仅针对 12306 启用控件识别；其他 App 保持上游行为。"

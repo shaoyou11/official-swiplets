@@ -25,7 +25,12 @@ import {
 
 const rewarded: Rule = { within: { class: /Reward|Incentive/i } };
 const ownApps = /^(?:com\.apple\.|io\.nekohasekai\.swipt(?:\.|$))/;
-const noRecordingApps = new Set(["com.unionpay.chsp", "com.uniqlo.cn"]);
+// 12306: use verified accessibility controls when the display stream stalls.
+const noRecordingApps = new Set([
+  "com.unionpay.chsp",
+  "com.uniqlo.cn",
+  "cn.12306.rails12306",
+]);
 const adWindowMs = 5_000;
 const skipText = /跳过/;
 const repeatWindowMs = 800;
